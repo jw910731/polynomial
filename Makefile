@@ -4,7 +4,7 @@ CFLAGS += -Wall -Wextra -std=gnu11
 LDFLAGS = 
 
 TARGETS = polynomial.out
-polynomial.out_OBJ= main.o polynomial.o
+polynomial.out_OBJ= main.o polynomial.o hash_map.o
 
 .PHONY: all
 
