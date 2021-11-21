@@ -213,7 +213,7 @@ int polynomial_remove_term(struct polynomial *p, int exp) {
     for (int i = 0; i < p->size; ++i) {
         if (p->terms[i].exp == exp) {
             for (int j = i + 1; j < p->size; ++j) {
-                p->terms[j] = p->terms[j - 1];
+                p->terms[j - 1] = p->terms[j];
             }
             p->size--;
             return 0;
@@ -325,4 +325,28 @@ void polynomial_sub(struct polynomial *dest, const struct polynomial *a,
     }
 }
 void polynomial_mul(struct polynomial *dest, const struct polynomial *a,
-                    const struct polynomial *b) {}
+                    const struct polynomial *b) {
+    polynomial_init(dest);
+    for (int i = 0; i < a->size; ++i) {
+        struct polynomial accumulator;
+        polynomial_init(&accumulator);
+        for (int j = 0; j < b->size; ++j) {
+            if (accumulator.size >= accumulator.cap) {
+                accumulator.cap *= 2;
+                accumulator.terms = realloc(accumulator.terms, accumulator.cap);
+            }
+            accumulator.terms[accumulator.size++] =
+                (struct term){.coeff = a->terms[i].coeff * b->terms[j].coeff,
+                              .exp = a->terms[i].exp + b->terms[j].exp};
+        }
+        // tmp = dest + accumulator
+        // dest = tmp
+        struct polynomial tmp;
+        polynomial_add(&tmp, dest, &accumulator);
+        dest->cap = tmp.cap;
+        dest->size = tmp.size;
+        free(dest->terms);
+        dest->terms = tmp.terms;
+        free(accumulator.terms);
+    }
+}
