@@ -157,6 +157,60 @@ int main() {
             }
             break;
         }
+        case 6: {
+            char name1[STRING_MAX_LEN] = {0}, name2[STRING_MAX_LEN];
+            printf("Input adder's name (use enter to separate): ");
+            fgets(name1, STRING_MAX_LEN, stdin);
+            fgets(name2, STRING_MAX_LEN, stdin);
+            Item *itm1 = table_query(table, name1),
+                 *itm2 = table_query(table, name2);
+            if (itm1 == NULL || itm2 == NULL) {
+                printf("Error: cannot find polynomial");
+                break;
+            }
+            struct polynomial *p;
+            polynomial_add(p, itm1->data, itm2->data);
+            fprintf(stdout, "Result: ");
+            polynomial_print_fp(p, stdout);
+            fputc('\n', stdout);
+            break;
+        }
+        case 7: {
+            char name1[STRING_MAX_LEN] = {0}, name2[STRING_MAX_LEN];
+            printf("Input subtractors' name (use enter to separate): ");
+            fgets(name1, STRING_MAX_LEN, stdin);
+            fgets(name2, STRING_MAX_LEN, stdin);
+            Item *itm1 = table_query(table, name1),
+                 *itm2 = table_query(table, name2);
+            if (itm1 == NULL || itm2 == NULL) {
+                printf("Error: cannot find polynomial");
+                break;
+            }
+            struct polynomial *p;
+            polynomial_sub(p, itm1->data, itm2->data);
+            fprintf(stdout, "Result: ");
+            polynomial_print_fp(p, stdout);
+            fputc('\n', stdout);
+            break;
+        }
+        case 8: {
+            char name1[STRING_MAX_LEN] = {0}, name2[STRING_MAX_LEN];
+            printf("Input subtractors' name (use enter to separate): ");
+            fgets(name1, STRING_MAX_LEN, stdin);
+            fgets(name2, STRING_MAX_LEN, stdin);
+            Item *itm1 = table_query(table, name1),
+                 *itm2 = table_query(table, name2);
+            if (itm1 == NULL || itm2 == NULL) {
+                printf("Error: cannot find polynomial");
+                break;
+            }
+            struct polynomial *p;
+            polynomial_mul(p, itm1->data, itm2->data);
+            fprintf(stdout, "Result: ");
+            polynomial_print_fp(p, stdout);
+            fputc('\n', stdout);
+            break;
+        }
         default:
             printf("<Invalid option!>\n");
             break;
