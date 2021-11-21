@@ -13,7 +13,7 @@ struct polynomial {
     struct term *terms;
 };
 
-struct polynomial *polynomial_init();
+void polynomial_init(struct polynomial *);
 void polynomial_free(struct polynomial *);
 struct polynomial *polynomial_parser(const char *);
 

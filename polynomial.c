@@ -6,11 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct polynomial *polynomial_init() {
-    struct polynomial *p = calloc(sizeof(struct polynomial), 1);
+void polynomial_init(struct polynomial *p) {
+    p->size = 0;
     p->cap = 16;
     p->terms = calloc(sizeof(struct term), p->cap);
-    return p;
 }
 
 void polynomial_free(struct polynomial *p) {
@@ -29,7 +28,8 @@ static int term_comp(const void *_a, const void *_b) {
 }
 
 struct polynomial *polynomial_parser(const char *str) {
-    struct polynomial *p = polynomial_init();
+    struct polynomial *p = calloc(sizeof(struct polynomial), 1);
+    polynomial_init(p);
     for (const char *it = str; *it;) {
         int sign = 1;
 
@@ -202,7 +202,7 @@ void polynomial_add_term(struct polynomial *p, int exp, double coeff) {
             p->size++;
             return;
         }
-        if(p->terms[i].exp == exp){
+        if (p->terms[i].exp == exp) {
             p->terms[i] = (struct term){.exp = exp, .coeff = coeff};
             return;
         }
@@ -224,9 +224,105 @@ int polynomial_remove_term(struct polynomial *p, int exp) {
 
 void polynomial_add(struct polynomial *dest, const struct polynomial *a,
                     const struct polynomial *b) {
+    polynomial_init(dest);
+    int i, j;
+    for (i = 0, j = 0; i < a->size && j < b->size;) {
+        if (a->terms[i].exp == b->terms[j].exp) {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] =
+                (struct term){.exp = a->terms[i].exp,
+                              .coeff = a->terms[i].coeff + b->terms[j].coeff};
+            ++i;
+            ++j;
+        } else if (a->terms[i].exp < b->terms[j].exp) {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] = (struct term){
+                .exp = a->terms[i].exp, .coeff = a->terms[i].coeff};
+            ++i;
 
+        } else {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] = (struct term){
+                .exp = b->terms[j].exp, .coeff = b->terms[j].coeff};
+            ++j;
+        }
+    }
+    for (; i < a->size; ++i) {
+        if (dest->size >= dest->cap) {
+            dest->cap *= 2;
+            dest->terms = realloc(dest->terms, dest->cap);
+        }
+        dest->terms[dest->size++] =
+            (struct term){.exp = a->terms[i].exp, .coeff = a->terms[i].coeff};
+    }
+    for (; j < b->size; ++j) {
+        if (dest->size >= dest->cap) {
+            dest->cap *= 2;
+            dest->terms = realloc(dest->terms, dest->cap);
+        }
+        dest->terms[dest->size++] =
+            (struct term){.exp = b->terms[j].exp, .coeff = b->terms[j].coeff};
+    }
 }
 void polynomial_sub(struct polynomial *dest, const struct polynomial *a,
-                    const struct polynomial *b) {}
+                    const struct polynomial *b) {
+    polynomial_init(dest);
+    int i, j;
+    for (i = 0, j = 0; i < a->size && j < b->size;) {
+        if (a->terms[i].exp == b->terms[j].exp) {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] =
+                (struct term){.exp = a->terms[i].exp,
+                              .coeff = a->terms[i].coeff - b->terms[j].coeff};
+            ++i;
+            ++j;
+        } else if (a->terms[i].exp < b->terms[j].exp) {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] = (struct term){
+                .exp = a->terms[i].exp, .coeff = a->terms[i].coeff};
+            ++i;
+
+        } else {
+            if (dest->size >= dest->cap) {
+                dest->cap *= 2;
+                dest->terms = realloc(dest->terms, dest->cap);
+            }
+            dest->terms[dest->size++] = (struct term){
+                .exp = b->terms[j].exp, .coeff = -b->terms[j].coeff};
+            ++j;
+        }
+    }
+    for (; i < a->size; ++i) {
+        if (dest->size >= dest->cap) {
+            dest->cap *= 2;
+            dest->terms = realloc(dest->terms, dest->cap);
+        }
+        dest->terms[dest->size++] =
+            (struct term){.exp = a->terms[i].exp, .coeff = a->terms[i].coeff};
+    }
+    for (; j < b->size; ++j) {
+        if (dest->size >= dest->cap) {
+            dest->cap *= 2;
+            dest->terms = realloc(dest->terms, dest->cap);
+        }
+        dest->terms[dest->size++] =
+            (struct term){.exp = b->terms[j].exp, .coeff = -b->terms[j].coeff};
+    }
+}
 void polynomial_mul(struct polynomial *dest, const struct polynomial *a,
                     const struct polynomial *b) {}
