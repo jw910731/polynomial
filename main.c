@@ -168,11 +168,12 @@ int main() {
                 printf("Error: cannot find polynomial");
                 break;
             }
-            struct polynomial *p;
-            polynomial_add(p, itm1->data, itm2->data);
+            struct polynomial p;
+            polynomial_add(&p, itm1->data, itm2->data);
             fprintf(stdout, "Result: ");
-            polynomial_print_fp(p, stdout);
+            polynomial_print_fp(&p, stdout);
             fputc('\n', stdout);
+            free(p.terms);
             break;
         }
         case 7: {
@@ -186,11 +187,12 @@ int main() {
                 printf("Error: cannot find polynomial");
                 break;
             }
-            struct polynomial *p;
-            polynomial_sub(p, itm1->data, itm2->data);
+            struct polynomial p;
+            polynomial_sub(&p, itm1->data, itm2->data);
             fprintf(stdout, "Result: ");
-            polynomial_print_fp(p, stdout);
+            polynomial_print_fp(&p, stdout);
             fputc('\n', stdout);
+            free(p.terms);
             break;
         }
         case 8: {
@@ -204,11 +206,12 @@ int main() {
                 printf("Error: cannot find polynomial");
                 break;
             }
-            struct polynomial *p;
-            polynomial_mul(p, itm1->data, itm2->data);
+            struct polynomial p;
+            polynomial_mul(&p, itm1->data, itm2->data);
             fprintf(stdout, "Result: ");
-            polynomial_print_fp(p, stdout);
+            polynomial_print_fp(&p, stdout);
             fputc('\n', stdout);
+            free(p.terms);
             break;
         }
         default:
